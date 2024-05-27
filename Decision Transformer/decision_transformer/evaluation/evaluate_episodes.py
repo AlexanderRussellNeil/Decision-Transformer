@@ -1,5 +1,33 @@
 import numpy as np
 import torch
+import time
+
+def extract_numeric_values(data):
+    numeric_values = []
+    
+    for item in data:
+        for key, value in item.items():
+            if key == 'is_success':
+                continue  # Skip the 'is_success' key
+
+            if isinstance(value, dict):
+                for subkey, subvalue in value.items():
+                    if isinstance(subvalue, np.ndarray):
+                        numeric_values.extend(subvalue.flatten().tolist())
+            elif isinstance(value, np.ndarray):
+                numeric_values.extend(value.flatten().tolist())
+            elif isinstance(value, (float, int, np.number)):
+                numeric_values.append(value)
+
+    return np.array(numeric_values)
+
+
+def extract_numeric_values_on_the_go(data):
+    result = []
+    for key, value in data.items():
+        result.extend(value.tolist())
+
+    return np.array(result)
 
 
 def evaluate_episode(
@@ -79,12 +107,20 @@ def evaluate_episode_rtg(
     model.eval()
     model.to(device=device)
 
-    state_mean = torch.from_numpy(state_mean).to(device=device)
-    state_std = torch.from_numpy(state_std).to(device=device)
+    #print("State mean : ", state_mean)
+
+    #print("State std : ", state_std)
+
+    state_mean = torch.from_numpy(np.array(state_mean)).to(device=device)
+    state_std = torch.from_numpy(np.array(state_std)).to(device=device)
 
     state = env.reset()
-    if mode == 'noise':
-        state = state + np.random.normal(0, 0.1, size=state.shape)
+
+    #print("The state : ", state)
+
+    state = extract_numeric_values(state)
+
+    #print("The new state : ", state)
 
     # we keep all the histories on the device
     # note that the latest action and reward will be "padding"
@@ -115,7 +151,17 @@ def evaluate_episode_rtg(
         actions[-1] = action
         action = action.detach().cpu().numpy()
 
-        state, reward, done, _ = env.step(action)
+        state, reward, done, truncated, info = env.step(action)
+
+        #time.sleep(0.5)
+
+        #print("Current state :    ", state)
+
+        state = extract_numeric_values_on_the_go(state)
+
+
+
+        #print("State after :    ", state)
 
         cur_state = torch.from_numpy(state).to(device=device).reshape(1, state_dim)
         states = torch.cat([states, cur_state], dim=0)

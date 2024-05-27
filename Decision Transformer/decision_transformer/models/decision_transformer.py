@@ -8,12 +8,15 @@ from decision_transformer.models.model import TrajectoryModel
 from decision_transformer.models.trajectory_gpt2 import GPT2Model
 
 
-class DecisionTransformer(TrajectoryModel):
 
+############################### WHEN RUNNING ONLY THIS FILE UN COMMENT IMPORT BELOW, OTHERWISE USE ABOVE
+#from model import TrajectoryModel
+#from trajectory_gpt2 import GPT2Model
+
+class DecisionTransformer(TrajectoryModel):
     """
     This model uses GPT to model (Return_1, state_1, action_1, Return_2, state_2, ...)
     """
-
     def __init__(
             self,
             state_dim,
@@ -133,7 +136,6 @@ class DecisionTransformer(TrajectoryModel):
             ).to(dtype=torch.long)
         else:
             attention_mask = None
-
         _, action_preds, return_preds = self.forward(
             states, actions, None, returns_to_go, timesteps, attention_mask=attention_mask, **kwargs)
 
