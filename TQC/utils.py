@@ -10,6 +10,10 @@ import codecs
 import re
 import imageio
 
+import pybullet as p
+import pybullet_data
+import gymnasium
+
 # Third-party library imports
 import numpy as np
 import pandas as pd
@@ -118,13 +122,19 @@ class CustomEnvWrapperTest(gym.Wrapper):
 
 
 class CustomEnvWrapperTestHuman(gym.Wrapper):
-    def __init__(self, env, env_loc_id, interaction_dir):
+    def __init__(self, env, env_loc_id, interaction_dir, window_position=(0, 0)):
         super().__init__(env)
+        self.env_loc_id = env_loc_id
+        self.interaction_dir = interaction_dir
+        self.window_position = window_position
+        self._set_window_position()
 
+    def _set_window_position(self):
+        os.environ["SDL_VIDEO_WINDOW_POS"] = f"{self.window_position[0]},{self.window_position[1]}"
 
     def step(self, action):
         return super().step(action)
-        
+
     def reset(self, **kwargs):
         return super().reset(**kwargs)
         

@@ -184,6 +184,8 @@ if __name__ == '__main__':
         
         success_count = 0
         fail_count = 0
+        
+        time.sleep(3)
 
         for i in range(user_input_count):
             state_mean = np.zeros(state_dim)
@@ -207,10 +209,9 @@ if __name__ == '__main__':
         #with open("results.txt", "w") as f:
         #    f.write(f"Success count: {success_count}\n")
         #    f.write(f"Fail count: {fail_count}\n")
-
+        root.mainloop()
         print(f'Success count: {success_count}, Fail count: {fail_count}')
     except Exception as e:
         print(f"Error : {e}")
     
-    root.mainloop()
 

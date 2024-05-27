@@ -190,7 +190,11 @@ def test_human_view(user_input = 100):
     root, success_label, fail_label = create_gui()
     success_count = 0
     fail_count = 0
-
+    
+    update_gui(success_label, fail_label, 0, 0)
+    root.update()
+    
+    time.sleep(6)
     for i in range(user_input):
         test_mean_reward, test_std_reward, episode_length = evaluate_policy(model, test_env, 1, return_episode_rewards=True)
 	
@@ -223,4 +227,3 @@ if __name__ == "__main__":
         test_human_view(user_input = user_input)
     except Error as err:
         print(f"Error: {err}")
-
